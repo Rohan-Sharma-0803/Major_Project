@@ -1,0 +1,223 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<body>
+  
+  <style>
+    #filters{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-left: 1rem;
+      
+    }
+    .filter{
+      margin-top: 1rem;
+      margin-right: 1rem;
+      text-align: center;
+      opacity:  0.7;
+      display: flex;
+      
+    }
+    .filter:hover{
+      opacity: 1;
+      cursor: pointer;
+    }
+    .filter p {
+      font-size: 0.8rem;
+    }
+    .tax-info{
+      display: none;
+    }
+    .tax-toggle { 
+      border: 1px solid;
+      border-radius: 1rem;
+      height: 3.25rem;
+      padding : 1rem; 
+      margin-left: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    
+
+    }
+  
+    @media(max-width:1024px){
+     .filter:nth-child(n+5){
+      display: none;
+     }  
+    }
+    @media(min-width:1025px){
+      #filters{
+        display: flex;
+      }
+    }
+    
+    /* #filters{
+    
+      width: 80%;
+      margin: 50px auto;
+      overflow: hidden;
+    } */
+    /* .filter{
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    } */
+    /* .arrow { 
+      border: none;
+      background-color: white;
+      opacity: 0.7;
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+    .arrow:hover{
+      opacity: 1;
+    }
+    */
+   
+  </style>
+  
+
+    <div id="filters">
+      <!-- <button class="arrow left-arrow" id="left-arrow">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>  -->
+      
+        
+          <div class="filter" onclick="filterBycategory('Trending')">
+            <i class="fa-solid fa-fire"></i>
+            <p>Trending</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Rooms')">
+            <i class="fa-solid fa-bed"></i>
+            <p>Rooms</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Iconic cities')">
+            <i class="fa-solid fa-mountain-city"></i>
+            <p>Iconic cities</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Mountains')">
+            <i class="fa-solid fa-mountain"></i>
+            <p>Mountains</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Castles')">
+            <i class="fa-brands fa-fort-awesome"></i>
+            <p>Castles</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Amazing pools')">
+            <i class="fa-solid fa-person-swimming"></i>
+            <p>Amazing pools</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Camping')">
+            <i class="fa-solid fa-campground"></i>
+            <p>Camping</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Farms')">
+            <i class="fa-solid fa-cow"></i>
+            <p>Farms</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Arctic')">
+            <i class="fa-solid fa-snowflake"></i>
+            <p>Arctic</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Domes')">
+            <i class="fa-solid fa-igloo"></i>
+            <p>Domes</p>
+          </div>
+          <div class="filter" onclick="filterBycategory('Boathouse')">
+           <a href="/listings/category/<%=category%>"> <i class="fa-solid fa-sailboat"></i></a>
+            <p>Boathouse</p>
+          </div>
+        
+     
+      <!-- <button class="arrow right-arrow" id="right-arrow">
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>  -->
+     
+      <div class="tax-toggle">
+        <div class="form-check-reverse form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+          <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+        <% for(let listing of allListings) {%>
+            <a href="/listings/<%=listing._id %>" class="listing-link">
+            <div class="card col listing-card" >
+                <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style = "height: 20rem;">
+                <div class="card-img-overlay"></div>
+                <div class="card-body">
+                  <p class="card-text"><b><%= listing.title%></b>
+                <br>
+                &#x20B9;<%= listing.price.toLocaleString("en-IN")%>/night
+                <i class="tax-info">&nbsp;   +18% GST</i>
+                </p>
+                </div>
+            
+              </div>
+            </a>
+              <%}%>
+
+    </div>
+
+    
+    </body>
+
+    <script>
+      let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+      taxSwitch.addEventListener("click" , ()=>{
+let taxInfo = document.getElementsByClassName("tax-info");
+for(info of taxInfo){
+  if(info.style.display != "inline"){
+    info.style.display = "inline";
+
+  }else{
+    info.style.display = "none";
+  }
+  
+}
+      })
+
+  const filters = document.querySelectorAll(".filter");
+  filters.forEach(filter => {
+    filter.addEventListener('click' , (e)=>{
+      const selectedCategory = e.target.closest('.filter').getAttribute('data-category');
+      fetch(`/listings/category/${selectedCategory}`)
+      .then(response => response.json())
+      .then(data => {
+        //clear current listing and render new ones
+        const listingContainer = doucment.getElementById('listing-cards');
+        listingContainer.innerHtml = '';
+      
+      // render the filtered listings
+      data.forEach(listing => {
+        const card = document.createElement('div');
+        card.classList.add('card' , 'col' , 'lsiting-card');
+         
+        //card content
+        card.innerHTML = `
+        <img src = "${listing.image.url}" class = "card-img-top" alt = "listing_image" style= "height:20rem;">
+        <div class="card-body">
+                                <p class="card-text"><b>${listing.title}</b>
+                                <br>
+                                &#x20B9;${listing.price.toLocaleString("en-IN")}/night
+                                <i class="tax-info">&nbsp; +18% GST</i>
+                                </p>
+                            </div>
+        `;
+        listingContainer.appendChild(card);
+      });
+    })
+      .catch(error => console.log(error));
+    });
+  
+    
+  });
+
+    
+    
+ 
+
+    </script>
