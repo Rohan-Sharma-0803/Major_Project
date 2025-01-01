@@ -32,6 +32,19 @@ const LocalStrategy = require("passport-local");
 const User = require("./Models/user.js");
 
 
+
+// database connection
+const dbUrl = process.env.ATLASDB_URL;
+main().then((res)=>{
+    console.log("connection successful");
+}).catch((err) =>{
+    console.log(err);
+
+})
+async function main(){
+    await mongoose.connect(dbUrl);
+}
+
 const Store = MongoStore.create({
 mongoUrl : dbUrl,
 crypto : {
@@ -61,17 +74,6 @@ const sessionOptions = {
 
 
 
-// database connection
-const dbUrl = process.env.ATLASDB_URL;
-main().then((res)=>{
-    console.log("connection successful");
-}).catch((err) =>{
-    console.log(err);
-
-})
-async function main(){
-    await mongoose.connect(dbUrl);
-}
 
 app.use(session(sessionOptions));
 app.use(flash())
