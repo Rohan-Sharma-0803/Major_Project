@@ -11,7 +11,7 @@ mapboxgl.accessToken = mapToken;
 
    marker.setPopup(
     new mapboxgl.Popup({offset : 35}).setHTML(
-      `<h4>${listing.title}</h4><p>exact location will be provided after booking</p>`
+      `<h4>${listing.location}</h4><p>exact location will be provided after booking</p>`
     ))
 
     const geojson = {
